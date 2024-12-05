@@ -25,68 +25,86 @@
 
 ---
 
-# Introduction
+# Summary of the Feature
 
-This homework focuses on creating a **responsive, single-page application**. An extreme case of this kind of application is the Google Mail client. While we won't aim for such complexity, we can still implement the main process.
-
-The page that initially loads (from the server) doesn't include any data. It presents a minimal interface but loads your JavaScript, which then requests data from your server via asynchronous HTTP requests. The page content is built dynamically as the requests come back from the server. Users interact with the page, triggering more asynchronous calls to send and receive data from your server. 
-
-This approach minimizes the time required to load HTML, CSS, and associated resources, building and rendering the DOM. By modifying the DOM with JavaScript instead, the page often becomes more responsive. This principle underlies modern frameworks like React.
-
-It has become significantly easier to use JavaScript for this kind of functionality since Google's early implementations. For example:
-- The [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) simplifies asynchronous requests.
-- Alternatively, you can use [jQuery](https://jquery.com/).
-
-A second purpose of this homework is to learn how to use a **professional/commercial API**. This skill will be necessary for team projects, where you're required to use an external API for core features.
+**As a movie enthusiast**,  
+I want to find information about a movie, such as runtime, rating, revenue generated, and cast members,  
+So I can learn about it, compare it to other movies, and discover new actors.  
+I'd like it to be faster and easier than other methods such as looking it up on IMDb or Wikipedia.
 
 ---
 
-# Application Theme
+# Tasks and Steps
 
-This application continues the **Movies and Shows** theme, using **The Movie Database (TMDB)** as the data source.  
-- We **will not** use the database from HW3.
-- This application **will not have a database** at all.
+### Setup
 
-Instead of actor searches, this homework focuses on **movie searches**. The TMDB homepage has a great search feature—your task is to replicate part of it.
+1. **Start by creating a normal MVC Core web application**.  
+   Simplify it by deleting the Privacy page.
+2. **Follow the Terms of Service for TMDB**:  
+   - Find the required statement and put it in your About page.  
+   - Download one of the required TMDB logos and place it in your About page or at the bottom of your Index page.
+3. **Create a TMDB account**:  
+   - Go to [TMDB](https://www.themoviedb.org/) and create an account.  
+   - Request an API key under Settings → API. Use the "API Read Access Token."  
+   - Add it as a secret in your project using `dotnet user-secrets`. Access it through the Configuration object in `Program.cs`.
 
 ---
 
-# Planning and Design
+### Modeling and Requirements
 
-Before building the application, sketch out or whiteboard what you want.  
-Here's an example plan:
+- **Modeling**: Review the provided sequence diagram at the bottom of this page to understand the flow for a typical (successful) use case. Ensure it makes sense before implementing.
+- **Watch the assigned video** to understand all requirements for building the application.
 
-1. **Homepage**:
-   - A search bar and button.
-   - Users type in the name or partial name of a movie and click "Search."
-   
-2. **Results**:
-   - Display the top 10-20 results, ordered by popularity.
-   - For each match, show a quick overview of the movie.
-   - The goal is to present multiple results, allowing users to quickly find the movie they're looking for.
+---
 
-A summary of this feature could be written as:
+### Feature #1: Search for Movies by Title
 
-As a movie enthusiast I want to find information about a movie, such as runtime, rating, revenue generated and cast members, so I can learn about it, compare to other movies, and discover new actors.  I'd like it to be faster and easier than other methods such as looking it up on IMDb or Wikipedia.
-Questions/Tasks:
-[Setup] Start by creating a normal MVC Core web application. Simplify it by deleting the Privacy page. We need to follow the Terms of Service for TMDB so find the required statement and put it in your About page.  Also download one of the required TMDB logos and place it in your About page or at the bottom of your Index page.  
-[Setup] Go to https://www.themoviedb.org/ Links to an external site. and create an account.  Then go to Settings and API to request an API key.  Mine was issued immediately.  The key you want is labeled "API Read Access Token".  Copy it and add it as a secret in your project using dotnet user-secrets.  Access it through the Configuration object in Program.cs.
-[Requirements] Watch the following video to get a better understanding of all the requirements for building this application:
+1. Use the `/search/movie` endpoint from TMDB.
+2. Display the first page of results, sorted by popularity (descending order).
+3. Include the following information:
+   - Poster image
+   - Title
+   - Release date (formatted as "Month Day, Year")
+   - Description (truncate to ~140 characters if necessary)
+4. Results should be presented in a condensed format:
+   - Avoid increasing the height of individual elements unnecessarily.
+   - Optionally write custom CSS instead of relying on Bootstrap cards.
 
-[Modeling] If the flow of the implementation isn't clear I've done some modeling for you that should help.  At the bottom of this page I've included a sequence diagram showing the entire flow for a typical (successful) use case.  Make sure it makes sense before proceeding to implementation.
-[Feature #1] Build the first component: search for movie by title and return movie summaries.  Use the endpoint /search/movie Links to an external site. .  You only need to show the first page of results (in descending order by popularity).  Include at minimum what is shown in the video: the poster image, title, release date (in Month Day, Year format) and description (if you want, only show the first 140 or so characters of it to keep it short).  If you want to add more, make sure it doesn't increase the height of that element very much as we want to show all search matches in a fairly condensed format.  I used Bootstrap cards for mine and I'm not happy with it.  If I had to do it over I'd write my own CSS for these.
-[Feature #2] Build the second component: display details of a selected movie in a modal (or equivalent).  Include at a minimum what is shown in the video: background image (different from the poster), title, year, release date, genres, runtime in hours and minutes, popularity, revenue (formatted in USD currency), full overview/description, and cast, including both the actor's name and role name if available.  The endpoints to use are: /movie/{id} Links to an external site. and /movie/{id}/credits Links to an external site..
-[Testing] There are two pieces of logic that can be tested easily.  Write appropriate unit tests in a separate test project for
-Transforming runtime in minutes to a string in hours and minutes.  e.g. 88 => "1 hour 28 minutes", 200 => "3 hours 20 minutes", 49 => "49 minutes", 0 => "not available"
-Transforming release date into Month Day, Year.  e.g. "1980-07-25" => "July 25, 1970", "" => "not available"
-Both of these pieces of functionality fall squarely in the "Presentation" domain and so should be handled by JavaScript.  However, we have not yet set up the capacity to test JavaScript so we'll do this in the "Business Logic" layer or service layer on the server and test it with NUnit.
-[Testing] Manual testing of the application.  Spend some time manually testing your application through the user interface.  Make sure all the different ways you can use the application lead to acceptable behavior (e.g. no errors, even in the console).  Next
-Purposefully corrupt your TMDB bearer token to simulate a problem with authentication and run through your manual testing again.  If you experience errors go back and put in suitable exception handling.
-Purposefully alter the URL going to the TMDB API to simulate a network failure (or disconnect your WiFi/network).  Run again / fix.
-The last one we'd like to test is too hard for now, but I'll mention it for completeness.  We'd like to test the situation where the JSON returned by the API is not what we expect (either they changed it or it was corrupted).  This might lead to a JsonException being thrown when we try to deserialize it. Look at your code and make sure there is exception handling for this situation.
-[Turn it in] Turn it in as usual on GitHub and submit a video demo/code walkthrough here on Canvas.
- 
+---
 
-Sequence diagram for normal successful requests:
+### Feature #2: Display Movie Details in a Modal
 
-sequence_diag_2.svg
+1. Use the endpoints `/movie/{id}` and `/movie/{id}/credits`.
+2. Include the following information in the modal:
+   - Background image (different from the poster)
+   - Title
+   - Year
+   - Release date
+   - Genres
+   - Runtime (formatted in hours and minutes)
+   - Popularity
+   - Revenue (formatted in USD currency)
+   - Full overview/description
+   - Cast (actor names and roles, if available)
+
+---
+
+### Testing
+
+1. **Unit Testing**: Write tests for the following:
+   - Transforming runtime in minutes to a string in hours and minutes (e.g., `88 → "1 hour 28 minutes"`).
+   - Transforming release dates into the format "Month Day, Year" (e.g., `"1980-07-25 → July 25, 1980"`).
+   - These tests should be written in a separate test project using NUnit.
+2. **Manual Testing**: Verify functionality through the UI:
+   - Ensure all use cases function without errors, including browser console errors.
+   - Simulate failure scenarios:
+     - Corrupt your TMDB bearer token to test authentication handling.
+     - Alter the URL to simulate a network failure or disconnect your network.
+     - Ensure proper exception handling for JSON deserialization issues (e.g., unexpected JSON format).
+
+---
+
+### Turn It In
+
+1. Submit your project on GitHub.
+2. Upload a video demo/code walkthrough to Canvas.
