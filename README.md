@@ -1,42 +1,69 @@
-Goals for this homework:
-Be able to write a MVC Core web application that employs AJAX to build a single-page responsive application
-Learn how to use an existing external API that requires authentication to acquire data, server-side
-Appreciate and understand the interface of a modern web REST API by using several of it's endpoints
-Demonstrate the use of JSON and AJAX, including parsing and generating JSON on the server in C#
-Understand the purpose, operation and some benefits and drawbacks of AJAX style pages
-Overall Requirements:
-This application should have only one page: one MVC controller (Home) and one view (Index)
-All dynamic functionality is created with Javascript AJAX calls to Web API methods that return JSON data
-Use JSON as the data exchange format
-All Javascript must be placed into a separate file (in the Scripts folder) and included via a @section section
-Use routing in an ApiController for retrieving data via AJAX with appropriate REST-like URLs given below
-Must use the Service pattern with DI to abstract out the interaction with TMDB's API
-Use either jQuery or vanilla JavaScript
-Your API key / bearer token MUST NOT be anywhere in your project source code or Git repository! It absolutely may not be sent to the client browser.
-You may NOT use any pre-built packages to implement AJAX for you, either server-side or client-side.  It must be done with the basic tools we've gone over in class.
-You may NOT use a library to access the TMDB API. (e.g. TMDbLib Links to an external site.) You must implement all access to the TMDB API yourself with primitive HTTP requests from C# and model classes you build yourself.
-No AJAX requests may be made from the client browser to TMDB directly.  All data must come from your own server, which gets it from the TMDB API.
-Do not send the entire JSON data object that you receive from GitHub to the client. Process it server-side so that you only send what is needed for your application. Sending the whole thing is not only bad practice; it is a data leak and a security no-no.
-Introduction
-This homework is all about creating a responsive, single-page application. An extreme case of this kind of application is the Google Mail client. We don't have those kinds of aspirations, but we can definitely get the main process down.
+# Goals for This Homework
 
-So the page that first loads (from the server) doesn't have any data. It presents a minimal interface only. But it does load your JavaScript, which requests data from your server via asynchronous HTTP requests and then builds the page content as desired as the requests come back from your server. Users then interact with the page and more asynchronous calls are placed to send data to and receive data back from your server. The benefit is that, perhaps surprisingly, the time to load HTML, CSS and associated resources, and build and render a DOM, is actually significant. Not doing those things, while using JavaScript to retrieve data and modify the DOM, often creates a more responsive page for the user. (In the extreme limit, this explains web frameworks like React Links to an external site..) We want to improve on our JavaScript skills for building parts of your project next year.
+- Be able to write an MVC Core web application that employs AJAX to build a single-page responsive application.
+- Learn how to use an existing external API that requires authentication to acquire data server-side.
+- Appreciate and understand the interface of a modern web REST API by using several of its endpoints.
+- Demonstrate the use of JSON and AJAX, including parsing and generating JSON on the server in C#.
+- Understand the purpose, operation, and some benefits and drawbacks of AJAX-style pages.
 
-It has become quite a bit easier to do this in JavaScript since the early days when Google pretty much invented it.  For some reference, here's the underlying way to do it from the Mozilla Developer Network Links to an external site., which is pretty awful.  It's now WAY easier with the Fetch API Links to an external site..  Alternately, feel free to use jQuery Links to an external site..
+---
 
-A second purpose of this homework is to learn how to use an existing professional/commercial API as a resource.  You'll need this for the team projects where you're required to use an external API for one or more core features.
+# Overall Requirements
 
-This application is a continuation of our Movies and Shows theme.  This time we will use The Movie Database Links to an external site. (TMDB) as our source of data.  We will NOT use the database from HW3 and in fact we won't have a database at all for this homework.  We've already done an actor search so this time we'll do a movie search.  The homepage of TMDB has a great search feature.  Let's try to reproduce some of it.  
+- This application should have **only one page**: one MVC controller (`Home`) and one view (`Index`).
+- All dynamic functionality is created with JavaScript AJAX calls to Web API methods that return JSON data.
+- Use **JSON** as the data exchange format.
+- All JavaScript must be placed into a separate file (in the `Scripts` folder) and included via a `@section` section.
+- Use routing in an `ApiController` for retrieving data via AJAX with appropriate REST-like URLs provided below.
+- Must use the **Service pattern** with Dependency Injection (DI) to abstract out the interaction with TMDB's API.
+- Use either **jQuery** or vanilla JavaScript.
+- Your API key or bearer token **MUST NOT** be anywhere in your project source code or Git repository. It **absolutely may not** be sent to the client browser.
+- You **may not** use any pre-built packages to implement AJAX for you, either server-side or client-side. It must be done with the basic tools covered in class.
+- You **may not** use a library to access the TMDB API (e.g., `TMDbLib`). You must implement all access to the TMDB API yourself with primitive HTTP requests from C# and model classes you build yourself.
+- No AJAX requests may be made from the client browser to TMDB directly. All data must come from your own server, which gets it from the TMDB API.
+- Do not send the entire JSON data object that you receive from TMDB to the client. Process it server-side so that you only send what is needed for your application. Sending the whole object is bad practice, a data leak, and a security violation.
 
-Before starting to build something it's a great idea to do some whiteboarding, or simply sketching out what you want.  Here's what I sketched out.  The home page is simple, with a search bar and button.  The user types in the name, or partial name of a movie, and clicks the search button.  We then display the top 10-20 results in order by popularity.  For each match, we want to show just a quick look a the movie.  The idea is we want to show quite a few of them so the user can easily choose the one they were after.
+---
 
-image.png
+# Introduction
 
-Then, they click on a movie and can see a lot more detail:
+This homework focuses on creating a **responsive, single-page application**. An extreme case of this kind of application is the Google Mail client. While we won't aim for such complexity, we can still implement the main process.
 
-image.png
+The page that initially loads (from the server) doesn't include any data. It presents a minimal interface but loads your JavaScript, which then requests data from your server via asynchronous HTTP requests. The page content is built dynamically as the requests come back from the server. Users interact with the page, triggering more asynchronous calls to send and receive data from your server. 
 
-If the user wants to go back to their search results, all they have to do is click the X to dismiss the modal or simply click outside it.  The previous search results are still there so they can click on another one to see it's details.  We want this experience to be very fast and easy.  Compare this to the TMDB website, which takes you to a separate page for the details.
+This approach minimizes the time required to load HTML, CSS, and associated resources, building and rendering the DOM. By modifying the DOM with JavaScript instead, the page often becomes more responsive. This principle underlies modern frameworks like React.
+
+It has become significantly easier to use JavaScript for this kind of functionality since Google's early implementations. For example:
+- The [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) simplifies asynchronous requests.
+- Alternatively, you can use [jQuery](https://jquery.com/).
+
+A second purpose of this homework is to learn how to use a **professional/commercial API**. This skill will be necessary for team projects, where you're required to use an external API for core features.
+
+---
+
+# Application Theme
+
+This application continues the **Movies and Shows** theme, using **The Movie Database (TMDB)** as the data source.  
+- We **will not** use the database from HW3.
+- This application **will not have a database** at all.
+
+Instead of actor searches, this homework focuses on **movie searches**. The TMDB homepage has a great search feature—your task is to replicate part of it.
+
+---
+
+# Planning and Design
+
+Before building the application, sketch out or whiteboard what you want.  
+Here's an example plan:
+
+1. **Homepage**:
+   - A search bar and button.
+   - Users type in the name or partial name of a movie and click "Search."
+   
+2. **Results**:
+   - Display the top 10-20 results, ordered by popularity.
+   - For each match, show a quick overview of the movie.
+   - The goal is to present multiple results, allowing users to quickly find the movie they're looking for.
 
 A summary of this feature could be written as:
 
